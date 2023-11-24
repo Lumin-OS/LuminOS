@@ -1,0 +1,11 @@
+NAME="LuminOS"
+PRETTY_NAME="LuminOS"
+ID=luminos
+BUILD_ID=rolling
+ANSI_COLOR="231;70"
+HOME_URL="TODO: Get domain"
+DOCUMENTATION_URL=""
+SUPPORT_URL=""
+BUG_REPORT_URL=""
+PRIVACY_POLICY_URL=""
+LOGO=archlinux-logo
