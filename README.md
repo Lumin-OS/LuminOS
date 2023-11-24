@@ -19,7 +19,7 @@ LuminOS is a simple Arch-based Linux distribution. Also serves as a bachelor's t
 
 To build LuminOS, you will need to have the following packages installed:
 
-TODO Add packages needed
+TODO List all packages needed
 
 Then, run the following commands:
 
