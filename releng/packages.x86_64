@@ -1,3 +1,4 @@
+### Archiso ###
 alsa-utils
 amd-ucode
 arch-install-scripts
@@ -14,8 +15,8 @@ cloud-init
 cryptsetup
 darkhttpd
 ddrescue
-dhclient
-dhcpcd
+#dhclient
+#dhcpcd
 diffutils
 dmidecode
 dmraid
@@ -35,7 +36,7 @@ gnu-netcat
 gpart
 gpm
 gptfdisk
-grml-zsh-config
+# grml-zsh-config
 grub
 hdparm
 hyperv
@@ -79,7 +80,6 @@ nvme-cli
 open-iscsi
 open-vm-tools
 openconnect
-openpgp-card-tools
 openssh
 openvpn
 partclone
@@ -98,7 +98,6 @@ rsync
 rxvt-unicode-terminfo
 screen
 sdparm
-sequoia-sq
 sg3_utils
 smartmontools
 sof-firmware
@@ -110,7 +109,6 @@ tcpdump
 terminus-font
 testdisk
 tmux
-tpm2-tools
 tpm2-tss
 udftools
 usb_modeswitch
@@ -127,3 +125,24 @@ wvdial
 xfsprogs
 xl2tpd
 zsh
+
+
+### Fonts ###
+adobe-source-code-pro-fonts
+adobe-source-sans-fonts
+noto-fonts-cjk
+noto-fonts-emoji
+otf-font-awesome
+otf-raleway
+ttf-hack-nerd
+ttf-jetbrains-mono
+ttf-jetbrains-mono-nerd
+ttf-joypixels
+ttf-mononoki-nerd
+ttf-ms-fonts
+ttf-noto-nerd
+ttf-ubuntu-font-family
+ttf-ubuntu-nerd
+ttf-ubuntu-mono-nerd
+
+
