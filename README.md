@@ -19,16 +19,12 @@ LuminOS is a simple Arch-based Linux distribution. Also serves as a bachelor's t
 
 To build LuminOS, you will need to have the following packages installed:
 
-TODO List all packages needed
-
 Then, run the following commands:
 
-TODO Add Instructions for building the ISO
-
 ## Contributing
-
-TODO Add Contributing Guidelines
 
 ## License
 
 LuminOS is licensed under the MIT License.
+
+TODO Add Contributing Guidelines, add instructions for building the ISO, list all packages needed
