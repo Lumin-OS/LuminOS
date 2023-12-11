@@ -36,7 +36,7 @@ gnu-netcat
 gpart
 gpm
 gptfdisk
-# grml-zsh-config
+grml-zsh-config
 grub
 hdparm
 hyperv
@@ -126,6 +126,26 @@ xfsprogs
 xl2tpd
 zsh
 
+### LuminOS ###
+git
+lightdm
+lightdm-slick-greeter
+rofi
+neovim
+
+### I3 ###
+i3-wm
+libev
+libxkbcommon-x11
+pango
+startup-notification
+xcb-util-cursor
+xcb-util-keysyms
+xcb-util-wm
+xcb-util-xrm
+yajl
+i3lock
+i3status
 
 ### Fonts ###
 adobe-source-code-pro-fonts
@@ -133,16 +153,45 @@ adobe-source-sans-fonts
 noto-fonts-cjk
 noto-fonts-emoji
 otf-font-awesome
-otf-raleway
+ttf-cascadia-code
 ttf-hack-nerd
 ttf-jetbrains-mono
 ttf-jetbrains-mono-nerd
 ttf-joypixels
 ttf-mononoki-nerd
-ttf-ms-fonts
 ttf-noto-nerd
 ttf-ubuntu-font-family
 ttf-ubuntu-nerd
 ttf-ubuntu-mono-nerd
+
+### XORG ###
+arandr
+xclip
+xdotool
+xf86-input-evdev
+xf86-input-libinput
+xf86-input-synaptics
+xf86-input-vmmouse
+xf86-input-void
+xf86-input-wacom
+xf86-video-amdgpu
+xf86-video-intel
+xf86-video-nouveau
+xf86-video-openchrome
+xf86-video-qxl
+xf86-video-vmware
+xl2tpd
+xorg-server
+xorg-xkill
+xorg-xmessage
+xorg-xprop
+xorg-xrdb
+xorg-xset
+xorg-xsetroot
+xorg-xclock
+xterm
+xwallpaper
+xorg-xinit
+
 
 
