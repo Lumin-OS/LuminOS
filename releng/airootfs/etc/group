@@ -61,3 +61,4 @@ polkitd:x:102:
 rpc:x:32:
 rpcuser:x:34:
 usbmux:x:140:
+luminos:x:1000:luminos
