@@ -1,0 +1,58 @@
+// LuminOS default waybar.
+//
+// Kept to modules that work on an unconfigured live boot. Anything that needs
+// per-machine knowledge (a specific battery name, a named network interface, a
+// thermal zone) is omitted, because on the live medium it would render as an
+// error glyph and make the bar look broken on first impression.
+{
+  "layer": "top",
+  "position": "top",
+  "height": 32,
+  "spacing": 6,
+
+  "modules-left": ["hyprland/workspaces", "hyprland/window"],
+  "modules-center": ["clock"],
+  "modules-right": ["pulseaudio", "network", "cpu", "memory", "tray"],
+
+  "hyprland/workspaces": {
+    "format": "{id}",
+    "on-click": "activate"
+  },
+
+  "hyprland/window": {
+    "format": "{title}",
+    "max-length": 60,
+    "separate-outputs": true
+  },
+
+  "clock": {
+    // The live medium has no timezone configured until the installer sets one,
+    // so this is UTC in practice. Showing the date too makes it obvious when a
+    // VM's clock is wrong, which is a common cause of pacman signature errors.
+    "format": "{:%a %d %b  %H:%M}",
+    "tooltip-format": "<tt>{calendar}</tt>"
+  },
+
+  "pulseaudio": {
+    // Talks to pipewire-pulse, which is socket-activated for this user.
+    "format": "{icon} {volume}%",
+    "format-muted": "󰝟 muted",
+    "format-icons": { "default": ["󰕿", "󰖀", "󰕾"] },
+    "on-click": "pavucontrol"
+  },
+
+  "network": {
+    "format-wifi": "  {essid}",
+    "format-ethernet": "󰈀  {ipaddr}",
+    "format-disconnected": "󰤮  offline",
+    "tooltip-format": "{ifname} via {gwaddr}",
+    // Opening the connection editor from the bar is the click-path for getting
+    // online before running the installer.
+    "on-click": "nm-connection-editor"
+  },
+
+  "cpu": { "format": "  {usage}%" },
+  "memory": { "format": "  {}%" },
+
+  "tray": { "icon-size": 18, "spacing": 8 }
+}

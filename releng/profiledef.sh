@@ -34,4 +34,12 @@ file_permissions=(
   ["/usr/local/bin/choose-mirror"]="0:0:755"
   ["/usr/local/bin/Installation_guide"]="0:0:755"
   ["/usr/local/bin/livecd-sound"]="0:0:755"
+  # Without this, everything under airootfs/home/luminos lands root-owned and
+  # the autologin session cannot write its own state — zsh cannot create its
+  # history and Hyprland cannot create its runtime dirs, so the session dies
+  # immediately after the compositor starts. archiso does not infer ownership
+  # from /etc/passwd; it has to be declared here.
+  ["/home/luminos"]="1000:1000:755"
+  ["/home/luminos/.zprofile"]="1000:1000:644"
+  ["/home/luminos/.config"]="1000:1000:755"
 )

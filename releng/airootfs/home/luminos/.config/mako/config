@@ -1,0 +1,23 @@
+# LuminOS default notification style.
+#
+# Notifications matter more than usual on an installer medium: this is how
+# NetworkManager reports that wifi failed and how the installer reports that it
+# finished. Defaults are too quiet and too short-lived for that.
+
+font=JetBrainsMono Nerd Font 10
+background-color=#1a1b26f0
+text-color=#c0caf5
+border-color=#7aa2f7
+border-size=2
+border-radius=6
+padding=10
+margin=10
+default-timeout=6000
+anchor=top-right
+max-visible=5
+
+[urgency=critical]
+border-color=#f7768e
+# Critical notifications do not expire. A failed install must not scroll away
+# before the user reads it.
+default-timeout=0

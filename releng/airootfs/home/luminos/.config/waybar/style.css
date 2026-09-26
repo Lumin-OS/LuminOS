@@ -1,0 +1,41 @@
+/* LuminOS default waybar style. Tokyo Night palette, matching the Hyprland
+   border colours in ../hypr/hyprland.conf. */
+* {
+  font-family: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
+  font-size: 13px;
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+}
+
+window#waybar {
+  background: rgba(26, 27, 38, 0.92);
+  color: #c0caf5;
+}
+
+#workspaces button {
+  padding: 0 10px;
+  color: #565f89;
+  background: transparent;
+}
+#workspaces button.active {
+  color: #1a1b26;
+  background: #7aa2f7;
+}
+#workspaces button:hover {
+  background: #414868;
+  color: #c0caf5;
+}
+
+#window { color: #a9b1d6; padding: 0 10px; }
+
+#clock, #pulseaudio, #network, #cpu, #memory, #tray {
+  padding: 0 10px;
+}
+
+#clock { color: #bb9af7; font-weight: bold; }
+#pulseaudio { color: #7dcfff; }
+#network { color: #9ece6a; }
+#network.disconnected { color: #f7768e; }
+#cpu { color: #e0af68; }
+#memory { color: #ff9e64; }

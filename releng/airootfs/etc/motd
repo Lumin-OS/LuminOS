@@ -1,11 +1,26 @@
-To install [38;2;46;204;113mLuminOS[0m follow the installation guide:
-https://wiki.archlinux.org/title/Installation_guide
 
-For Wi-Fi, authenticate to the wireless network using the [35miwctl[0m utility.
-For mobile broadband (WWAN) modems, connect with the [35mmmcli[0m utility.
-Ethernet, WLAN and WWAN interfaces using DHCP should work automatically.
+Welcome to [38;2;46;204;113mLuminOS[0m — live installer medium.
 
-After connecting to the internet, the installation guide can be accessed
-via the convenience script [35mInstallation_guide[0m.
+The graphical session ([35mHyprland[0m) starts automatically on [35mtty1[0m.
+If you are reading this on a text console, switch there with [35mCtrl+Alt+F1[0m.
 
-[41m [41m [41m [40m [44m [40m [41m [46m [45m [41m [46m [43m [41m [44m [45m [40m [44m [40m [41m [44m [41m [41m [46m [42m [41m [44m [43m [41m [45m [40m [40m [44m [40m [41m [44m [42m [41m [46m [44m [41m [46m [47m [0m
+  [36mIn the session[0m
+    [35mSuper+Return[0m  or  [35mCtrl+Alt+T[0m   open a terminal
+    [35mSuper+D[0m                        application launcher
+    [35mSuper+Q[0m                        close window
+    [35mSuper+Shift+E[0m                  exit the session
+
+  [36mNetwork[0m
+    Wired connections come up automatically via [35mNetworkManager[0m.
+    Wi-Fi:  [35mnmtui[0m  (text UI)  or click the tray applet in the bar.
+    Mobile broadband (WWAN) modems: [35mmmcli[0m.
+
+  [36mInstalling[0m
+    Reference guide:  [35mInstallation_guide[0m
+    The LuminOS graphical installer is still in development; until it
+    lands, install manually or with [35marchinstall[0m.
+
+  [36mIf the session did not start[0m
+    Its output stays on tty1. The compositor log is at
+    [35m/run/user/1000/hypr/*/hyprland.log[0m
+

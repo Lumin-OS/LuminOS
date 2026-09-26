@@ -1,0 +1,12 @@
+## LuminOS live medium only.
+##
+## The installer has to partition disks, mount targets and run pacstrap, all of
+## which need root. The live user must therefore be able to escalate without a
+## password, because there IS no password to type: this is an anonymous live
+## session that anyone who boots the medium is already sitting in front of.
+##
+## This file is scoped to the live image and is NOT copied to the installed
+## system. The installer creates the real user with a real password and normal
+## password-prompting sudo. If you ever find this file on an installed LuminOS,
+## that is a bug in the installer, not a policy here.
+%wheel ALL=(ALL:ALL) NOPASSWD: ALL

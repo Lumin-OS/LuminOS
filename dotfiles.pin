@@ -1,0 +1,7 @@
+# Provenance for the vendored copy of Lumin-OS/dotfiles in
+# releng/airootfs/home/luminos/.config/.
+#
+# Regenerate with ./scripts/sync-dotfiles.sh — do not edit by hand.
+DOTFILES_REPO="https://github.com/Lumin-OS/dotfiles"
+DOTFILES_COMMIT="42a8907f5641f8a980ae379f88339063b0ddadaa"
+DOTFILES_SYNCED_AT="2026-09-26T13:44:24Z"
