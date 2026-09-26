@@ -3,3 +3,8 @@ output/
 logs/
 work/
 clean.sh
+
+# Persistent pacman package cache used by build.sh. Content-addressed and
+# signature-verified on use, so it is a cache and never build state; deleting it
+# only costs download time.
+.cache/
