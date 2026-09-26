@@ -1,181 +1,262 @@
-### Archiso ###
-alsa-utils
-amd-ucode
-arch-install-scripts
-archinstall
-b43-fwcutter
+# LuminOS live image package set.
+#
+# Pinned by snapshot, not by version string: archiso has no per-package version
+# syntax here, so reproducibility comes from pacman.conf pointing at the frozen
+# Arch Linux Archive snapshot named in ../pin.env. Adding a package to this file
+# is therefore safe; it resolves against that snapshot, not against today.
+#
+# Inclusion bar: needed to run the installer, or needed on first boot. Anything
+# that is merely nice to have costs ISO size and build minutes.
+#
+# Verify every entry still exists before committing a change:
+#   ./scripts/verify-packages.sh
+
+### Base + kernel ###
 base
-bind
-bolt
-brltty
-broadcom-wl
-btrfs-progs
-clonezilla
-cloud-init
-cryptsetup
-darkhttpd
-ddrescue
-#dhclient
-#dhcpcd
-diffutils
-dmidecode
-dmraid
-dnsmasq
-dosfstools
-e2fsprogs
-edk2-shell
-efibootmgr
-espeakup
-ethtool
-exfatprogs
-f2fs-tools
-fatresize
-foot-terminfo
-fsarchiver
-gnu-netcat
-gpart
-gpm
-gptfdisk
-grml-zsh-config
-grub
-hdparm
-hyperv
-intel-ucode
-irssi
-iw
-iwd
-jfsutils
-kitty-terminfo
-less
-lftp
-libfido2
-libusb-compat
 linux
-linux-atm
 linux-firmware
 linux-firmware-marvell
-livecd-sounds
-lsscsi
-lvm2
-lynx
-man-db
-man-pages
-mc
-mdadm
-memtest86+
-memtest86+-efi
 mkinitcpio
 mkinitcpio-archiso
 mkinitcpio-nfs-utils
-modemmanager
-mtools
-nano
-nbd
-ndisc6
-nfs-utils
-nilfs-utils
-nmap
-ntfs-3g
-nvme-cli
-open-iscsi
-open-vm-tools
-openconnect
-openssh
-openvpn
-partclone
-parted
-partimage
-pcsclite
-ppp
-pptpclient
-pv
-qemu-guest-agent
+amd-ucode
+intel-ucode
+sof-firmware
+
+### Bootloaders (installed into the target by the installer, and used by us) ###
+grub
+efibootmgr
+syslinux
+edk2-shell
+memtest86+
+memtest86+-efi
 refind
-reflector
-reiserfsprogs
-rp-pppoe
-rsync
-rxvt-unicode-terminfo
-screen
+
+### Installer prerequisites: partitioning + filesystems ###
+# The installer (Felix-1871/dawn) drives these; they must exist in the live env.
+arch-install-scripts
+archinstall
+btrfs-progs
+cryptsetup
+dosfstools
+e2fsprogs
+exfatprogs
+f2fs-tools
+fatresize
+gptfdisk
+jfsutils
+lvm2
+mdadm
+mtools
+nilfs-utils
+ntfs-3g
+ntfsprogs
+parted
+udftools
+xfsprogs
+dmraid
+gpart
+
+### Disk / hardware diagnostics ###
+bolt
+ddrescue
+dmidecode
+hdparm
+lsscsi
+nvme-cli
 sdparm
 sg3_utils
 smartmontools
-sof-firmware
-squashfs-tools
-sudo
-syslinux
-systemd-resolvconf
-tcpdump
-terminus-font
 testdisk
-tmux
-tpm2-tss
-udftools
 usb_modeswitch
-usbmuxd
 usbutils
-vim
-virtualbox-guest-utils-nox
-vpnc
-wezterm-terminfo
+libusb-compat
+partclone
+fsarchiver
+
+### Networking ###
+# NetworkManager is the live network stack (see
+# airootfs/etc/systemd/system/multi-user.target.wants/). It replaces
+# systemd-networkd + iwd because it is the only option here with a GUI the
+# founder can click to join wifi before running the installer, and because the
+# installer needs a network it can query rather than one it has to configure.
+networkmanager
+network-manager-applet
+nm-connection-editor
+wpa_supplicant
 wireless-regdb
 wireless_tools
-wpa_supplicant
-wvdial
-xfsprogs
+iw
+modemmanager
+usbmuxd
+systemd-resolvconf
+b43-fwcutter
+bind
+ldns
+ethtool
+ndisc6
+linux-atm
+openssh
+openbsd-netcat
+openconnect
+openvpn
+vpnc
+ppp
+pptpclient
+rp-pppoe
 xl2tpd
+wvdial
+dnsmasq
+darkhttpd
+nfs-utils
+nbd
+open-iscsi
+rsync
+lftp
+tcpdump
+nmap
+
+### Console + shell environment ###
 zsh
-
-### LuminOS ###
-git
+grml-zsh-config
+sudo
+polkit
+vim
+nano
 neovim
+less
+man-db
+man-pages
+diffutils
+git
+mc
+tmux
+screen
+pv
+gpm
+terminus-font
+squashfs-tools
+xdg-utils
+xdg-user-dirs
+libfido2
+pcsclite
+tpm2-tss
+tpm2-tools
+openpgp-card-tools
+sequoia-sq
+mmc-utils
+bcachefs-tools
+
+### terminfo for terminals people SSH in from (no Wayland cost) ###
+foot-terminfo
+kitty-terminfo
+ghostty-terminfo
+kmscon-terminfo
+rxvt-unicode-terminfo
+
+### Accessibility ###
+brltty
+espeakup
+livecd-sounds
+
+### Virtualisation guest agents (first-boot quality in a VM) ###
+qemu-guest-agent
+open-vm-tools
+virtualbox-guest-utils-nox
+hyperv
+cloud-init
+
+### Graphics stack ###
+# mesa is explicit rather than pulled in transitively: Hyprland needs a working
+# GL/EGL implementation, and in a VM with no passthrough GPU that means mesa's
+# llvmpipe/virgl software path. vulkan-swrast gives the same fallback for
+# anything that asks for Vulkan.
+mesa
+vulkan-swrast
+xorg-xwayland
+qt5-wayland
+qt6-wayland
+
+### Default session: Hyprland ###
+# Replaces the i3 + xorg-server stack this profile shipped until now.
+# "Session completeness" means all of the following, not just the compositor.
+#
+# NOTE: no trailing comments on package lines in this file. mkarchiso parses it
+# with `sed 's/#.*//'`, which strips the comment but leaves the trailing
+# whitespace behind, and the padded string is then handed to pacstrap verbatim.
+#
+# compositor
+hyprland
+# polkit agent — without it nothing can escalate privileges from the GUI
+hyprpolkitagent
+# portal frontend + backends. The GTK backend is what provides a file chooser,
+# which the installer needs.
+xdg-desktop-portal
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+# status bar
+waybar
+# launcher. rofi 2.x is Wayland-native; rofi-wayland was merged upstream and
+# that AUR package no longer exists.
 rofi
-picom
-dunst
-nitrogen
-alacritty
+# notifications
+mako
+# default terminal — Wayland-native and small
+foot
+# file manager + its mount/trash backend
 thunar
+gvfs
+# replaces xclip
+wl-clipboard
+# screenshots — also how QA captures boot evidence from inside the session
+grim
+slurp
+brightnessctl
+libnotify
 
-
-### I3 ###
-i3-wm
-i3status
-i3lock
-i3blocks
-i3status
+### Audio ###
+pipewire
+pipewire-alsa
+pipewire-pulse
+pipewire-jack
+wireplumber
+alsa-utils
+pavucontrol
 
 ### Fonts ###
-adobe-source-code-pro-fonts
-adobe-source-sans-fonts
+# Deliberately small. The previous set carried eleven nerd-font packages plus
+# two Adobe families, which is hundreds of MB of squashfs for a live installer.
+# One monospace nerd font covers the terminal and waybar's glyphs; Noto covers
+# everything else.
+noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
-otf-font-awesome
-ttf-cascadia-code
-ttf-hack-nerd
-ttf-jetbrains-mono
 ttf-jetbrains-mono-nerd
-ttf-joypixels
-ttf-mononoki-nerd
-ttf-noto-nerd
-ttf-ubuntu-font-family
-ttf-ubuntu-nerd
-ttf-ubuntu-mono-nerd
-### XORG ###
-arandr
-xclip
-xdotool
-xl2tpd
-xorg-server
-xorg-xkill
-xorg-xmessage
-xorg-xprop
-xorg-xrdb
-xorg-xset
-xorg-xsetroot
-xorg-xclock
-xterm
-xwallpaper
-xorg-xinit
+otf-font-awesome
 
-
-
+# ---------------------------------------------------------------------------
+# Removed 2026-09-26 — no longer in any Arch repo (verified against core/extra/
+# multilib). Each was dropped upstream between Feb 2024 and now; leaving any of
+# them here makes the build fail at package resolution.
+#   broadcom-wl      -> moved to AUR. airootfs/etc/modprobe.d/broadcom-wl.conf
+#                       is kept: it is a blacklist of the in-kernel b43/ssb
+#                       drivers and is harmless without the package, but wifi on
+#                       old Broadcom chips is now unsupported on the live image.
+#   gnu-netcat       -> moved to AUR; replaced above by openbsd-netcat.
+#   reiserfsprogs    -> dropped upstream; reiserfs was removed from the kernel
+#                       in 6.13, so there is nothing to format or check.
+#   wezterm-terminfo -> moved to AUR.
+#   nitrogen         -> moved to AUR. Not replaced by a wallpaper daemon: the
+#                       session sets misc:background_color instead, because
+#                       there is no LuminOS wallpaper art to load yet.
+#   ttf-joypixels    -> dropped upstream over licensing.
+#
+# Removed 2026-09-26 — superseded by the Wayland session:
+#   i3-wm i3status i3lock i3blocks picom arandr xterm alacritty xwallpaper
+#   xclip xdotool xorg-server xorg-xinit xorg-xclock xorg-xkill xorg-xmessage
+#   xorg-xprop xorg-xrdb xorg-xset xorg-xsetroot
+#
+# Removed 2026-09-26 — fail the "needed to install, or needed on first boot"
+# bar and are the two largest rescue payloads:
+#   clonezilla partimage
+# ---------------------------------------------------------------------------

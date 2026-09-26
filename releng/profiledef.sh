@@ -3,14 +3,24 @@
 
 iso_name="luminos"
 iso_label="LuminOS_$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y%m)"
-iso_publisher="LuminOS <TODO: Get domain>"
+iso_publisher="LuminOS <https://github.com/Lumin-OS>"
 iso_application="LuminOS LiveCD"
 iso_version="$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y.%m.%d)"
 install_dir="arch"
 buildmodes=('iso')
-bootmodes=('bios.syslinux.mbr' 'bios.syslinux.eltorito'
-           'uefi-ia32.grub.esp' 'uefi-x64.grub.esp'
-           'uefi-ia32.grub.eltorito' 'uefi-x64.grub.eltorito')
+# archiso 90 renamed every boot mode this profile used. The old names still
+# work but emit deprecation warnings, and the six old entries collapse into
+# exactly these two:
+#   bios.syslinux.mbr + bios.syslinux.eltorito          -> bios.syslinux
+#   uefi-{ia32,x64}.grub.{esp,eltorito}                 -> uefi.grub
+# 'uefi.grub' covers IA32 and x64, and emits both the ESP and the El Torito
+# image, so BIOS and UEFI are both still covered.
+#
+# grub (not systemd-boot, which is what upstream archiso now defaults to)
+# because LuminOS's branded menu lives in releng/grub/grub.cfg and grub is what
+# renders it. Note archiso rejects combining 'uefi.grub' with
+# 'uefi.systemd-boot' — it is one or the other.
+bootmodes=('bios.syslinux' 'uefi.grub')
 arch="x86_64"
 pacman_conf="pacman.conf"
 airootfs_image_type="squashfs"
