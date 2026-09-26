@@ -1,181 +1,31 @@
-### Archiso ###
-alsa-utils
-amd-ucode
-arch-install-scripts
-archinstall
-b43-fwcutter
-base
-bind
-bolt
-brltty
-broadcom-wl
-btrfs-progs
-clonezilla
-cloud-init
-cryptsetup
-darkhttpd
-ddrescue
-#dhclient
-#dhcpcd
-diffutils
-dmidecode
-dmraid
-dnsmasq
-dosfstools
-e2fsprogs
-edk2-shell
-efibootmgr
-espeakup
-ethtool
-exfatprogs
-f2fs-tools
-fatresize
-foot-terminfo
-fsarchiver
-gnu-netcat
-gpart
-gpm
-gptfdisk
-grml-zsh-config
-grub
-hdparm
-hyperv
-intel-ucode
-irssi
-iw
-iwd
-jfsutils
-kitty-terminfo
-less
-lftp
-libfido2
-libusb-compat
-linux
-linux-atm
-linux-firmware
-linux-firmware-marvell
-livecd-sounds
-lsscsi
-lvm2
-lynx
-man-db
-man-pages
-mc
-mdadm
-memtest86+
-memtest86+-efi
-mkinitcpio
+# The LuminOS live ISO. The installed system is luminos-base and
+# luminos-desktop, the same meta-packages Dawn's online install
+# pacstraps, so an offline install (a copy of this image) matches an
+# online one. Dawn's offline cleanup removes luminos-dawn, luminos-live
+# and mkinitcpio-archiso again (luminos-dawn's installer.toml,
+# [offline_cleanup]); syslinux and zsh stay.
+#
+# mkarchiso's format: one package per line; comments are left out.
+
+luminos-base
+luminos-desktop
+# Also in luminos-base: the repository's signing key, which online
+# installs need.
+luminos-keyring
+
+# The installer.
+luminos-dawn
+
+# The live-only files and tools, from ../luminos-live, built by
+# ../build.sh.
+luminos-live
+
+# The live boot's initramfs hooks.
 mkinitcpio-archiso
-mkinitcpio-nfs-utils
-modemmanager
-mtools
-nano
-nbd
-ndisc6
-nfs-utils
-nilfs-utils
-nmap
-ntfs-3g
-nvme-cli
-open-iscsi
-open-vm-tools
-openconnect
-openssh
-openvpn
-partclone
-parted
-partimage
-pcsclite
-ppp
-pptpclient
-pv
-qemu-guest-agent
-refind
-reflector
-reiserfsprogs
-rp-pppoe
-rsync
-rxvt-unicode-terminfo
-screen
-sdparm
-sg3_utils
-smartmontools
-sof-firmware
-squashfs-tools
-sudo
+
+# mkarchiso requires syslinux in this list for the BIOS boot modes, so it
+# can't be a luminos-live dependency.
 syslinux
-systemd-resolvconf
-tcpdump
-terminus-font
-testdisk
-tmux
-tpm2-tss
-udftools
-usb_modeswitch
-usbmuxd
-usbutils
-vim
-virtualbox-guest-utils-nox
-vpnc
-wezterm-terminfo
-wireless-regdb
-wireless_tools
-wpa_supplicant
-wvdial
-xfsprogs
-xl2tpd
+
+# root's shell in the live /etc/passwd, which offline installs keep.
 zsh
-
-### LuminOS ###
-git
-neovim
-rofi
-picom
-dunst
-nitrogen
-alacritty
-thunar
-
-
-### I3 ###
-i3-wm
-i3status
-i3lock
-i3blocks
-i3status
-
-### Fonts ###
-adobe-source-code-pro-fonts
-adobe-source-sans-fonts
-noto-fonts-cjk
-noto-fonts-emoji
-otf-font-awesome
-ttf-cascadia-code
-ttf-hack-nerd
-ttf-jetbrains-mono
-ttf-jetbrains-mono-nerd
-ttf-joypixels
-ttf-mononoki-nerd
-ttf-noto-nerd
-ttf-ubuntu-font-family
-ttf-ubuntu-nerd
-ttf-ubuntu-mono-nerd
-### XORG ###
-arandr
-xclip
-xdotool
-xl2tpd
-xorg-server
-xorg-xkill
-xorg-xmessage
-xorg-xprop
-xorg-xrdb
-xorg-xset
-xorg-xsetroot
-xorg-xclock
-xterm
-xwallpaper
-xorg-xinit
-
-
-
