@@ -1,0 +1,126 @@
+# The LuminOS ISO's live-only parts, in one package so an offline install
+# can take them all out again: Dawn's offline cleanup removes it with
+# `pacman -Rns` (luminos-dawn's installer.toml, [offline_cleanup]), which
+# also removes the dependencies nothing else needs. It's installed only on
+# the ISO: ../build.sh builds it for mkarchiso, and it's never a
+# dependency of luminos-base or luminos-desktop.
+#
+# The services it enables have their links here, under /usr/lib, not in
+# the profile's /etc, so removing the package disables them too. Most of
+# the files come from Arch's releng profile.
+
+pkgname=luminos-live
+pkgver=1
+pkgrel=1
+pkgdesc='Live-only parts of the LuminOS ISO'
+arch=('any')
+url='https://github.com/Lumin-OS/LuminOS'
+license=('GPL-3.0-or-later')
+depends=(
+  # The live boot: archiso's PXE hooks and copy-to-RAM progress (optional
+  # dependencies of mkinitcpio-archiso), and the boot menu's memory test
+  # and UEFI shell.
+  mkinitcpio-nfs-utils nbd pv
+  memtest86+ memtest86+-efi edk2-shell
+
+  # The live desktop: the live user's hyprland.lua starts these.
+  hyprland swaybg alacritty rofi
+
+  # The speech boot entry: sound, the speakup screen reader and braille.
+  alsa-utils brltty espeakup livecd-sounds
+
+  # The zsh setup root and the live user log in to.
+  grml-zsh-config
+
+  # Networking tools, next to luminos-base's NetworkManager.
+  bind darkhttpd dnsmasq ethtool irssi iw lftp linux-atm lynx
+  modemmanager ndisc6 nmap openconnect openssh openvpn ppp pptpclient
+  rp-pppoe tcpdump usb_modeswitch vpnc wireless-regdb wireless_tools
+  wpa_supplicant wvdial xl2tpd
+
+  # Hardware support, and guest services for virtual machines.
+  b43-fwcutter bolt dmidecode gpm hdparm hyperv libfido2 libusb-compat
+  linux-firmware-marvell lsscsi nvme-cli open-vm-tools pcsclite
+  qemu-guest-agent sdparm sg3_utils smartmontools sof-firmware tpm2-tss
+  usbmuxd usbutils virtualbox-guest-utils-nox
+
+  # Disks, filesystems and boot repair.
+  arch-install-scripts clonezilla cryptsetup ddrescue diffutils dmraid
+  dosfstools e2fsprogs efibootmgr exfatprogs f2fs-tools fatresize
+  fsarchiver gpart gptfdisk grub jfsutils lvm2 mdadm mtools nfs-utils
+  nilfs-utils ntfs-3g open-iscsi partclone parted partimage refind rsync
+  squashfs-tools testdisk udftools xfsprogs
+
+  # Console tools.
+  less man-db man-pages mc nano screen terminus-font tmux vim
+)
+source=(
+  pacman-init.service etc-pacman.d-gnupg.mount
+  autologin.conf volatile-storage.conf do-not-suspend.conf
+  livecd-sound asound.conf.in livecd-alsa-unmuter.service livecd-talk.service
+  zlogin automated_script.sh scdaemon.conf
+  motd
+)
+# The sources are this repository's own files, next to the PKGBUILD.
+sha256sums=(
+  SKIP SKIP
+  SKIP SKIP SKIP
+  SKIP SKIP SKIP SKIP
+  SKIP SKIP SKIP
+  SKIP
+)
+
+# Enables a unit the way `systemctl enable` would, but with the link
+# under /usr/lib instead of /etc.
+_enable() {
+  install -dm755 "$pkgdir/usr/lib/systemd/system/$1.wants"
+  ln -s "../$2" "$pkgdir/usr/lib/systemd/system/$1.wants/$2"
+}
+
+package() {
+  local units="$pkgdir/usr/lib/systemd/system"
+
+  # A fresh pacman keyring on every boot, in a tmpfs, once the clock is
+  # synchronised. On an installed system this would wipe the keyring.
+  install -Dm644 -t "$units" pacman-init.service etc-pacman.d-gnupg.mount
+  _enable multi-user.target pacman-init.service
+  _enable sysinit.target systemd-time-wait-sync.service
+
+  # The live user's autologin on tty1, where its .zprofile starts
+  # Hyprland.
+  install -Dm644 autologin.conf "$units/getty@tty1.service.d/autologin.conf"
+
+  # No journal on disk, and no suspend on closing the lid.
+  install -Dm644 volatile-storage.conf \
+    "$pkgdir/usr/lib/systemd/journald.conf.d/volatile-storage.conf"
+  install -Dm644 do-not-suspend.conf \
+    "$pkgdir/usr/lib/systemd/logind.conf.d/do-not-suspend.conf"
+
+  # The speech boot entry's sound and screen reader helpers.
+  install -Dm755 livecd-sound "$pkgdir/usr/bin/livecd-sound"
+  install -Dm644 asound.conf.in "$pkgdir/usr/share/livecd-sound/asound.conf.in"
+  install -Dm644 -t "$units" livecd-alsa-unmuter.service livecd-talk.service
+  _enable sound.target livecd-alsa-unmuter.service
+  _enable multi-user.target livecd-talk.service
+
+  # Guest services for virtual machines, mobile broadband and smart cards.
+  local unit
+  for unit in hv_fcopy_daemon.service hv_kvp_daemon.service \
+      hv_vss_daemon.service vboxservice.service vmtoolsd.service \
+      vmware-vmblock-fuse.service ModemManager.service; do
+    _enable multi-user.target "$unit"
+  done
+  ln -s ModemManager.service "$units/dbus-org.freedesktop.ModemManager1.service"
+  _enable sockets.target pcscd.socket
+
+  # root's console: the screen reader fix and archiso's script= boot
+  # parameter (.zlogin), and gpg's smart card settings.
+  install -dm750 "$pkgdir/root"
+  install -m644 zlogin "$pkgdir/root/.zlogin"
+  install -m755 automated_script.sh "$pkgdir/root/.automated_script.sh"
+  install -dm700 "$pkgdir/root/.gnupg"
+  install -m644 scdaemon.conf "$pkgdir/root/.gnupg/scdaemon.conf"
+
+  # The console greeting, which points to Dawn.
+  install -Dm644 motd "$pkgdir/etc/motd"
+}
