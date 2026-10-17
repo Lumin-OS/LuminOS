@@ -43,3 +43,8 @@ adds them to its temporary repository ahead of the published repository.
 the pacman configuration inside the resulting image; online installs still
 require the packages to be published. Sign and publish all four packages
 before distributing a release ISO.
+
+The matching implementation is reviewed in [Dawn #11](https://github.com/Lumin-OS/dawn/pull/11),
+[packaging #3](https://github.com/Lumin-OS/luminos-packages/pull/3), and
+[dotfiles #2](https://github.com/Lumin-OS/dotfiles/pull/2). Merge those
+providers before this ISO change.
