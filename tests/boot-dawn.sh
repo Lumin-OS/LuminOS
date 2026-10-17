@@ -10,6 +10,7 @@ trap 'rm -rf -- "$work"' EXIT
 cp /usr/share/edk2-ovmf/x64/OVMF_VARS.4m.fd "$work/vars.fd"
 # Status 124 is reported below together with the serial log.
 status=0
+: > "$log"
 timeout 300 qemu-system-x86_64 -enable-kvm -machine q35 -cpu host -smp 2 -m 4096 \
     -drive if=pflash,format=raw,readonly=on,file=/usr/share/edk2-ovmf/x64/OVMF_CODE.4m.fd \
     -drive if=pflash,format=raw,file="$work/vars.fd" \
