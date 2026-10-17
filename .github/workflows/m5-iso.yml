@@ -1,0 +1,72 @@
+name: M5 real ISO smoke test
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  boot-dawn:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    container:
+      image: archlinux:base-devel
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install build and VM tools
+        run: |
+          test -e /dev/kvm
+          pacman -Syu --noconfirm --needed rust git archiso grub sudo jq \
+            qemu-system-x86 qemu-img edk2-ovmf fontconfig libxcb libxkbcommon \
+            wayland libglvnd
+      - uses: actions/checkout@v5
+        with:
+          repository: Lumin-OS/luminos-packages
+          ref: 00cbb36760421f10d135f04fd247d106fe30cf10
+          path: package-sources
+      - name: Build the actual LuminOS packages and ISO
+        run: |
+          useradd -m builder
+          echo 'builder ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/builder
+          mkdir -p /tmp/m5-packages /tmp/m5-build /tmp/m5-sources
+          chown -R builder:builder "$GITHUB_WORKSPACE" /tmp/m5-packages /tmp/m5-build /tmp/m5-sources
+          for package in luminos-keyring luminos-base luminos-desktop luminos-dawn; do
+            runuser -u builder -- env PKGDEST=/tmp/m5-packages \
+              BUILDDIR=/tmp/m5-build SRCDEST=/tmp/m5-sources \
+              makepkg --dir "$GITHUB_WORKSPACE/package-sources/$package" \
+              --nodeps --nosign --nocheck --clean
+          done
+          cp -a releng /tmp/m5-profile
+          # Only compression differs in the test image; keep CI build time bounded.
+          echo "airootfs_image_tool_options=('-comp' 'zstd' '-Xcompression-level' '1' '-b' '1M')" >> /tmp/m5-profile/profiledef.sh
+          install -Dm755 tests/observe-dawn.sh /tmp/m5-profile/airootfs/usr/bin/observe-dawn
+          mkdir -p /tmp/m5-profile/airootfs/etc/systemd/system/multi-user.target.wants
+          cat > /tmp/m5-profile/airootfs/etc/systemd/system/observe-dawn.service <<'UNIT'
+          [Unit]
+          Description=Observe Dawn's real Wayland window (CI only)
+          After=systemd-user-sessions.service
+          [Service]
+          Type=oneshot
+          ExecStart=/usr/bin/observe-dawn
+          StandardOutput=journal+console
+          StandardError=journal+console
+          UNIT
+          ln -s ../observe-dawn.service /tmp/m5-profile/airootfs/etc/systemd/system/multi-user.target.wants/
+          # Send boot and observer messages to QEMU's serial log.
+          sed -i '/^[[:space:]]*linux /s/$/ console=tty0 console=ttyS0,115200n8/' /tmp/m5-profile/grub/grub.cfg
+          echo 'file_permissions["/usr/bin/observe-dawn"]="0:0:755"' >> /tmp/m5-profile/profiledef.sh
+          chown -R builder:builder /tmp/m5-profile
+          runuser -u builder -- env LUMINOS_PACKAGE_DIR=/tmp/m5-packages \
+            LUMINOS_PROFILE_DIR=/tmp/m5-profile bash build.sh
+      - name: Boot the actual ISO and wait for Dawn's window
+        run: tests/boot-dawn.sh output/*.iso "$GITHUB_WORKSPACE/boot-dawn.log"
+      - name: Upload boot log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m5-real-iso-boot
+          path: boot-dawn.log
+          if-no-files-found: ignore

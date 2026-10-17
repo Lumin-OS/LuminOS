@@ -27,16 +27,24 @@ mkdir -p -- "$repo"
 # --nodeps: the dependencies are the live system's, not this machine's.
 BUILDDIR="$work/makepkg" PKGDEST="$repo" \
     makepkg --dir "$root/luminos-live" --nodeps --nosign --clean
-repo-add "$repo/luminos-iso.db.tar.gz" "$repo"/luminos-live-*.pkg.tar.*
+# Optional local builds for integration testing before publication. They
+# override the public repository only while mkarchiso builds the image.
+if [[ -n ${LUMINOS_PACKAGE_DIR:-} ]]; then
+    cp -- "$LUMINOS_PACKAGE_DIR"/*.pkg.tar.zst "$repo/"
+fi
+repo-add "$repo/luminos-iso.db.tar.gz" "$repo"/*.pkg.tar.zst
 
 # Only the build sees this repository. The live system's own pacman.conf
 # (releng/airootfs/etc/pacman.conf) doesn't list it, so nothing installed
 # from the ISO can get luminos-live again.
-cat "$root/releng/pacman.conf" - > "$work/pacman.conf" <<EOF
+awk -v repo="$repo" '
+    /^\[luminos-repository\]/ {
+        print "[luminos-iso]\nSigLevel = Optional TrustAll\nServer = file://" repo "\n"
+    }
+    { print }
+' "$root/releng/pacman.conf" > "$work/pacman.conf"
 
-[luminos-iso]
-SigLevel = Optional TrustAll
-Server = file://$repo
-EOF
-
-sudo mkarchiso -v -C "$work/pacman.conf" -w "$work" -o "$root/output" "$root/releng"
+# A disposable copied profile lets CI add a boot observer without
+# putting test services on production media.
+profile="${LUMINOS_PROFILE_DIR:-$root/releng}"
+sudo mkarchiso -v -C "$work/pacman.conf" -w "$work" -o "$root/output" "$profile"
