@@ -1,0 +1,100 @@
+name: M6 real ISO end-to-end
+
+on:
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/m6-e2e.yml'
+      - 'tests/e2e/**'
+      - 'build.sh'
+      - 'releng/**'
+      - 'luminos-live/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: m6-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  install-and-reboot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    container:
+      image: archlinux:base-devel
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check KVM and install tools
+        run: |
+          test -e /dev/kvm
+          pacman -Syu --noconfirm --needed archiso grub sudo jq python git \
+            qemu-system-x86 qemu-img edk2-ovmf curl shellcheck
+          test -f /usr/share/edk2-ovmf/x64/OVMF_CODE.secboot.4m.fd
+          useradd -m builder
+          echo 'builder ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/builder
+      - uses: actions/checkout@v5
+        with:
+          repository: Lumin-OS/dawn
+          # Shared helpers from Dawn PR #12; immutable so a run is reproducible.
+          ref: af4a5f1214d26910e61dda45da99cf7ec2088496
+          path: dawn-source
+      - uses: actions/checkout@v5
+        with:
+          repository: Lumin-OS/luminos-repository
+          ref: 342509099c8ee88ec7f6d2b1519fe04d6845089c
+          path: published-repository
+      - uses: actions/checkout@v5
+        with:
+          repository: Lumin-OS/luminos-packages
+          ref: 2c1a5bc9e77d9c1b731f018d2e93d6fcc69c3e6e
+          path: package-sources
+      - name: Check test scripts
+        run: |
+          shellcheck tests/e2e/*.sh
+          python tests/e2e/test_verify_published.py
+      - name: Record source versions
+        run: |
+          mkdir -p /tmp/m6-report
+          for source in . dawn-source published-repository package-sources; do
+            printf '%s ' "$source" >> /tmp/m6-report/sources.txt
+            git -C "$source" rev-parse HEAD >> /tmp/m6-report/sources.txt
+          done
+      - name: Freeze the local mirror and build the real ISO
+        id: prepare
+        run: |
+          tests/e2e/prepare.sh "$GITHUB_WORKSPACE/published-repository" \
+            "$GITHUB_WORKSPACE/package-sources/luminos-keyring/luminos.gpg"
+          cp /tmp/luminos-e2e/mirror/SHA256SUMS /tmp/m6-report/
+      - name: Online install and reboot
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          DAWN_SOURCE_DIR: ${{ github.workspace }}/dawn-source
+        run: tests/e2e/run.sh online
+      - name: Offline install without a NIC and reboot
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          DAWN_SOURCE_DIR: ${{ github.workspace }}/dawn-source
+        run: tests/e2e/run.sh offline
+      - name: Secure Boot installation and enforcing reboot
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          DAWN_SOURCE_DIR: ${{ github.workspace }}/dawn-source
+        run: tests/e2e/run.sh secure-boot
+      - name: Upload logs and package snapshot manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-real-iso-results
+          path: |
+            /tmp/luminos-e2e/*.log
+            /tmp/m6-report/
+          if-no-files-found: ignore
+          retention-days: 14

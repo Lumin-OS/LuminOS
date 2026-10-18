@@ -42,7 +42,7 @@ awk -v repo="$repo" '
         print "[luminos-iso]\nSigLevel = Optional TrustAll\nServer = file://" repo "\n"
     }
     { print }
-' "$root/releng/pacman.conf" > "$work/pacman.conf"
+' "${LUMINOS_PACMAN_CONF:-$root/releng/pacman.conf}" > "$work/pacman.conf"
 
 # A disposable copied profile lets CI add a boot observer without
 # putting test services on production media.
