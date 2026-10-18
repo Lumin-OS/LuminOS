@@ -19,6 +19,7 @@ gpg --homedir "$work/gnupg" --batch --verify \
     "$published/x86_64/luminos-repository.db.sig" "$published/x86_64/luminos-repository.db"
 # Pacman must also know the replacement public key when it encounters
 # the signed upstream DB/packages during snapshot population (CI only).
+pacman-key --init
 pacman-key --add "$key"
 pacman-key --lsign-key 547F4761802A0904A0B10E5FAE527343BC3E39B3
 # Authenticate the published binaries using the hashes in the signed database.
