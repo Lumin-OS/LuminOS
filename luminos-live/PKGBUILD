@@ -11,7 +11,7 @@
 
 pkgname=luminos-live
 pkgver=1
-pkgrel=1
+pkgrel=2
 pkgdesc='Live-only parts of the LuminOS ISO'
 arch=('any')
 url='https://github.com/Lumin-OS/LuminOS'
@@ -24,7 +24,7 @@ depends=(
   memtest86+ memtest86+-efi edk2-shell
 
   # The live desktop: the live user's hyprland.lua starts these.
-  hyprland swaybg alacritty rofi
+  luminos-desktop
 
   # The speech boot entry: sound, the speakup screen reader and braille.
   alsa-utils brltty espeakup livecd-sounds
