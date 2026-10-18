@@ -63,3 +63,7 @@ host. Packaging now sets baseline x86-64 Rust/C/C++ flags and the existing
 real-ISO smoke job builds 0.1.0-2 in official Arch, uploading unsigned
 packages for signing. Publish that portable build before pinning the next
 real-ISO install run; never mask the problem by changing the VM's CPU.
+
+Snapshot validation rejects the obsolete M5 keyring and native-CPU Dawn
+versions before ISO preparation. The user publishes the replacements first;
+then the workflow is pinned to that signed repository commit for acceptance.

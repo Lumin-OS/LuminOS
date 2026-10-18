@@ -20,6 +20,12 @@ with tarfile.open(root / "luminos-repository.db", "r:gz") as db:
         name = fields["%NAME%"][0]
         if name not in required:
             continue
+        version = fields["%VERSION%"][0]
+        if (name, version) in {
+            ("luminos-dawn", "0.1.0-1"),
+            ("luminos-keyring", "20260928-1"),
+        }:
+            sys.exit(f"Publish the M6 replacement before testing: {name} {version} is obsolete")
         filename = fields["%FILENAME%"][0]
         if pathlib.Path(filename).name != filename:
             sys.exit("Invalid package filename in repository database")

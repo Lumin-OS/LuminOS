@@ -44,7 +44,7 @@ jobs:
         with:
           repository: Lumin-OS/dawn
           # Shared helpers from Dawn PR #12; immutable so a run is reproducible.
-          ref: cc7ef79d15d029e606cf57c346afb1c6b3030c8d
+          ref: 86d681754eb0c29fed8b2ac6686b2f2201d9eee5
           path: dawn-source
       - uses: actions/checkout@v5
         with:

@@ -7,6 +7,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: real-iso-smoke-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 defaults:
   run:
     shell: bash
@@ -32,6 +36,11 @@ jobs:
           repository: Lumin-OS/luminos-packages
           ref: bf9b2f7c4711439ada4a1ac2d0d9dbde07bf3090
           path: package-sources
+      - name: Trust the published repository key in the disposable builder
+        run: |
+          pacman-key --init
+          pacman-key --add package-sources/luminos-keyring/luminos.gpg
+          pacman-key --lsign-key 547F4761802A0904A0B10E5FAE527343BC3E39B3
       - uses: actions/cache/restore@v4
         id: dawn-cache
         with:

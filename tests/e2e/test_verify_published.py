@@ -15,7 +15,7 @@ NAMES = ("luminos-base", "luminos-desktop", "luminos-keyring", "luminos-dawn")
 
 
 class PublishedPackages(unittest.TestCase):
-    def verify(self, *, corrupt=False, missing=False, traversal=False):
+    def verify(self, *, corrupt=False, missing=False, traversal=False, obsolete=None):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             with tarfile.open(root / "luminos-repository.db", "w:gz") as db:
@@ -28,8 +28,9 @@ class PublishedPackages(unittest.TestCase):
                         (root / filename).write_bytes(b"tampered")
                     if traversal and name == NAMES[0]:
                         filename = "../" + filename
+                    version = obsolete[1] if obsolete and name == obsolete[0] else "1-1"
                     desc = (
-                        f"%NAME%\n{name}\n\n%FILENAME%\n{filename}\n\n"
+                        f"%NAME%\n{name}\n\n%VERSION%\n{version}\n\n%FILENAME%\n{filename}\n\n"
                         f"%SHA256SUM%\n{digest}\n\n"
                     ).encode()
                     member = tarfile.TarInfo(f"{name}-1-1/desc")
@@ -52,6 +53,16 @@ class PublishedPackages(unittest.TestCase):
         result = self.verify(missing=True)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Missing published packages", result.stderr)
+
+    def test_native_cpu_release_rejected_before_build(self):
+        result = self.verify(obsolete=("luminos-dawn", "0.1.0-1"))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Publish the M6 replacement", result.stderr)
+
+    def test_old_trust_key_release_rejected_before_build(self):
+        result = self.verify(obsolete=("luminos-keyring", "20260928-1"))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Publish the M6 replacement", result.stderr)
 
     def test_path_outside_repository_rejected(self):
         result = self.verify(traversal=True)
