@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           repository: Lumin-OS/luminos-packages
-          ref: bf9b2f7c4711439ada4a1ac2d0d9dbde07bf3090
+          ref: 640b712d00e49c52d0b5b598cf959851f0f91f9f
           path: package-sources
       - name: Trust the published repository key in the disposable builder
         run: |
