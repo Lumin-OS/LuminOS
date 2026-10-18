@@ -17,6 +17,10 @@ chmod 700 "$work/gnupg"
 gpg --homedir "$work/gnupg" --batch --import "$key"
 gpg --homedir "$work/gnupg" --batch --verify \
     "$published/x86_64/luminos-repository.db.sig" "$published/x86_64/luminos-repository.db"
+# Pacman must also know the replacement public key when it encounters
+# the signed upstream DB/packages during snapshot population (CI only).
+pacman-key --add "$key"
+pacman-key --lsign-key 547F4761802A0904A0B10E5FAE527343BC3E39B3
 # Authenticate the published binaries using the hashes in the signed database.
 # Older uploads lack detached package signatures; do not invent signatures or
 # change production pacman's policy to compensate.
@@ -69,9 +73,11 @@ install -Dm755 "$root/tests/e2e/install.sh" "$profile/airootfs/usr/lib/luminos-e
 # Run once from a generator, enabled only by a VM-specific SMBIOS credential.
 install -Dm755 "$root/tests/e2e/generator.sh" \
     "$profile/airootfs/usr/lib/systemd/system-generators/luminos-e2e"
-echo 'airootfs_image_tool_options=("-comp" "zstd" "-Xcompression-level" "1" "-b" "1M")' >> "$profile/profiledef.sh"
-echo 'file_permissions["/usr/lib/luminos-e2e/install"]="0:0:755"' >> "$profile/profiledef.sh"
-echo 'file_permissions["/usr/lib/systemd/system-generators/luminos-e2e"]="0:0:755"' >> "$profile/profiledef.sh"
+{
+    echo 'airootfs_image_tool_options=("-comp" "zstd" "-Xcompression-level" "1" "-b" "1M")'
+    echo 'file_permissions["/usr/lib/luminos-e2e/install"]="0:0:755"'
+    echo 'file_permissions["/usr/lib/systemd/system-generators/luminos-e2e"]="0:0:755"'
+} >> "$profile/profiledef.sh"
 sed -i '/^[[:space:]]*linux /s/$/ console=tty0 console=ttyS0,115200n8/' "$profile/grub/grub.cfg"
 chown -R builder:builder "$work" "$root"
 runuser -u builder -- env LUMINOS_PROFILE_DIR="$profile" \
