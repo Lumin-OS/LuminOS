@@ -79,16 +79,40 @@ jobs:
         env:
           DAWN_SOURCE_DIR: ${{ github.workspace }}/dawn-source
         run: tests/e2e/run.sh online
+      - name: Upload online serial logs
+        if: ${{ always() && steps.prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-online-serial
+          path: /tmp/luminos-e2e/*-online.log
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Offline install without a NIC and reboot
         if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
         env:
           DAWN_SOURCE_DIR: ${{ github.workspace }}/dawn-source
         run: tests/e2e/run.sh offline
+      - name: Upload offline serial logs
+        if: ${{ always() && steps.prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-offline-serial
+          path: /tmp/luminos-e2e/*-offline.log
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Secure Boot installation and enforcing reboot
         if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
         env:
           DAWN_SOURCE_DIR: ${{ github.workspace }}/dawn-source
         run: tests/e2e/run.sh secure-boot
+      - name: Upload secure-boot serial logs
+        if: ${{ always() && steps.prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-secure-boot-serial
+          path: /tmp/luminos-e2e/*-secure-boot.log
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Upload logs and package snapshot manifest
         if: always()
         uses: actions/upload-artifact@v4

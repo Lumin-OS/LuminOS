@@ -67,3 +67,9 @@ real-ISO install run; never mask the problem by changing the VM's CPU.
 Snapshot validation rejects the obsolete M5 keyring and native-CPU Dawn
 versions before ISO preparation. The user publishes the replacements first;
 then the workflow is pinned to that signed repository commit for acceptance.
+
+Each scenario uploads its serial logs immediately, so a failed online check
+can be diagnosed while offline/Secure Boot continue. The fixture restricts
+permissions only while creating the password-bearing plan, then restores
+normal service umask before starting Dawn; otherwise pacstrap creates
+root-only parent directories and the new user cannot read /etc.

@@ -22,6 +22,8 @@ jq -n --arg source "$source" --argjson secure "$secure" '{
   user: {full_name: "Ada Lovelace", username: "ada",
     password: "correct-horse-battery-staple", autologin: false}
 }' > "$plan"
+# Keep the plan private without changing permissions created by pacstrap.
+umask 022
 if [[ $scenario == offline ]]; then
     # QEMU attaches no NIC; assert that isolation rather than trusting a label.
     [[ $(find /sys/class/net -mindepth 1 -maxdepth 1 | wc -l) == 1 ]]
