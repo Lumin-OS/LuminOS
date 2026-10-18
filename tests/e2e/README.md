@@ -73,3 +73,8 @@ can be diagnosed while offline/Secure Boot continue. The fixture restricts
 permissions only while creating the password-bearing plan, then restores
 normal service umask before starting Dawn; otherwise pacstrap creates
 root-only parent directories and the new user cannot read /etc.
+
+Online scenarios wait (at most 180 seconds) for the production live ISO's
+`pacman-init.service` before starting pacstrap. The service imports the Arch
+and LuminOS keys; an automated plan can otherwise race that startup. Offline
+scenarios do not wait on the network/time-dependent live keyring service.

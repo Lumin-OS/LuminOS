@@ -29,6 +29,9 @@ if [[ $scenario == offline ]]; then
     [[ $(find /sys/class/net -mindepth 1 -maxdepth 1 | wc -l) == 1 ]]
 else
     nm-online --quiet --timeout=60
+    # A headless plan can start before the live keyring's initial import
+    # finishes. Wait for the real ISO service; do not bypass signature checks.
+    timeout 180 systemctl start pacman-init.service
     curl --fail --retry 15 --retry-connrefused --retry-delay 2 http://10.0.2.2:8080/dawnlocal.db -o /dev/null
 fi
 /usr/bin/dawn-backend --target /dev/disk/by-id/virtio-dawn-target "$plan"
