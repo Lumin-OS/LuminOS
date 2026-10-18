@@ -41,4 +41,3 @@ umount "$cleanup_root"
 rmdir "$cleanup_root"
 sync
 echo DAWN-E2E-INSTALL-OK
-systemctl poweroff

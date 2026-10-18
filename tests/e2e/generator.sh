@@ -19,6 +19,7 @@ ConditionPathExists=/dev/disk/by-id/virtio-dawn-target
 Type=oneshot
 ImportCredential=dawn.scenario
 ExecStart=/usr/lib/luminos-e2e/install
+ExecStopPost=/usr/bin/systemctl poweroff --no-block
 TimeoutStartSec=40min
 StandardOutput=journal+console
 StandardError=journal+console
