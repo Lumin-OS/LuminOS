@@ -57,3 +57,9 @@ Update the workflow's immutable repository/recipe/helper revisions deliberately
 when publishing new packages or changing test helpers. A failed nightly run
 retains its logs and manifest; reproduce with those exact package versions
 rather than quietly resolving a different dependency set.
+
+The first M6 run exposed a native-CPU 0.1.0-1 Dawn build from a developer
+host. Packaging now sets baseline x86-64 Rust/C/C++ flags and the existing
+real-ISO smoke job builds 0.1.0-2 in official Arch, uploading unsigned
+packages for signing. Publish that portable build before pinning the next
+real-ISO install run; never mask the problem by changing the VM's CPU.

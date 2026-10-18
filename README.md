@@ -48,3 +48,20 @@ The matching implementation is reviewed in [Dawn #11](https://github.com/Lumin-O
 [packaging #3](https://github.com/Lumin-OS/luminos-packages/pull/3), and
 [dotfiles #2](https://github.com/Lumin-OS/dotfiles/pull/2). Merge those
 providers before this ISO change.
+
+## M6 nightly installation checks
+
+The [real-ISO end-to-end workflow](.github/workflows/m6-e2e.yml) builds the
+production profile against one frozen package snapshot, then installs online,
+offline without a NIC, and with Secure Boot in disposable QEMU guests. Every
+installed disk must boot without its ISO or mirror and accept the new user's
+login; Secure Boot must enforce in its scenario. Logs, source revisions and
+package hashes are uploaded for failures as well as successful runs.
+
+See [the test instructions](tests/e2e/README.md) for the CI environment,
+snapshot trust model and fixture isolation. `LUMINOS_PACMAN_CONF` lets CI
+select a local snapshot for the build; the default build configuration stays
+`releng/pacman.conf`. Guests use a snapshot-only pacman config added to a
+copied test profile. Merge the [Dawn helpers](https://github.com/Lumin-OS/dawn/pull/12)
+and [keyring rotation](https://github.com/Lumin-OS/luminos-packages/pull/4)
+before the consuming ISO change.

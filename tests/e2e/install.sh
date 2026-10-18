@@ -26,7 +26,8 @@ if [[ $scenario == offline ]]; then
     # QEMU attaches no NIC; assert that isolation rather than trusting a label.
     [[ $(find /sys/class/net -mindepth 1 -maxdepth 1 | wc -l) == 1 ]]
 else
-    curl --fail --retry 15 --retry-delay 2 http://10.0.2.2:8080/dawnlocal.db -o /dev/null
+    nm-online --quiet --timeout=60
+    curl --fail --retry 15 --retry-connrefused --retry-delay 2 http://10.0.2.2:8080/dawnlocal.db -o /dev/null
 fi
 /usr/bin/dawn-backend --target /dev/disk/by-id/virtio-dawn-target "$plan"
 # Remove CI-only fixture files copied from the live image. The service itself
