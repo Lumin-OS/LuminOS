@@ -33,7 +33,11 @@ if [[ -n $pid ]]; then kill "$pid"; pid=""; fi
 report=$("$dawn/tests/e2e/qemu-run.sh" verify-login "$work/target-$scenario.qcow2" \
     "$work/vars-$scenario.fd" "$scenario" "$work/login-$scenario.log" \
     ada correct-horse-battery-staple 360)
-expected=0
-[[ $scenario != secure-boot ]] || expected=1
-[[ $report == "DAWN-E2E-LOGGED-IN secure_boot=$expected" ]]
+if [[ $scenario == secure-boot ]]; then
+    [[ $report == 'DAWN-E2E-LOGGED-IN secure_boot=1' ]]
+else
+    # Plain OVMF may omit SecureBoot entirely; either case is non-enforcing.
+    [[ $report == 'DAWN-E2E-LOGGED-IN secure_boot=0' ||
+       $report == 'DAWN-E2E-LOGGED-IN secure_boot=' ]]
+fi
 echo "$scenario: $report"

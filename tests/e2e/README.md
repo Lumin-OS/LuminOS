@@ -33,7 +33,7 @@ For each reboot, detach the ISO and stop the mirror, log in as the created
 user with the configured password, and verify base/desktop/keyring, keyboard
 configuration, enabled greetd/NetworkManager, no live user, installer or
 archiso hooks, and no live autologin drop-ins. Plain scenarios require
-`SecureBoot=0`. Password leakage, timeout or any failed assertion fails CI.
+`SecureBoot=0` or an absent SecureBoot variable on plain OVMF. Password leakage, timeout or any failed assertion fails CI.
 Later scenarios still run after an earlier scenario fails.
 
 The published M5 database is signed, but its four package entries currently
