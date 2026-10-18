@@ -44,7 +44,7 @@ jobs:
         with:
           repository: Lumin-OS/dawn
           # Shared helpers from Dawn PR #12; immutable so a run is reproducible.
-          ref: af4a5f1214d26910e61dda45da99cf7ec2088496
+          ref: cc7ef79d15d029e606cf57c346afb1c6b3030c8d
           path: dawn-source
       - uses: actions/checkout@v5
         with:
@@ -63,7 +63,8 @@ jobs:
       - name: Record source versions
         run: |
           mkdir -p /tmp/m6-report
-          for source in . dawn-source published-repository package-sources; do
+          printf 'LuminOS %s\n' '${{ github.sha }}' > /tmp/m6-report/sources.txt
+          for source in dawn-source published-repository package-sources; do
             printf '%s ' "$source" >> /tmp/m6-report/sources.txt
             git -C "$source" rev-parse HEAD >> /tmp/m6-report/sources.txt
           done
